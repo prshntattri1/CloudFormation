@@ -37,7 +37,7 @@
                         },
                         "files": {
                             "/var/www/html/index.html" : {
-                                "content" : "index.html created - ",
+                                "content" : "index.html Created - ",
                                 "mode"  : "000644"
                             }
                         },

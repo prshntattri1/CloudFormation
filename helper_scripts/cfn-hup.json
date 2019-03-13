@@ -37,7 +37,7 @@
                         },
                         "files": {
                             "/var/www/html/index.html" : {
-                                "content" : "index.html Created - ",
+                                "content" : "index.html created - ",
                                 "mode"  : "000644"
                             },
                             "/etc/cfn/cfn-hup.conf" : {
