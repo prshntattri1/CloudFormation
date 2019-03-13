@@ -6,52 +6,52 @@
       "SubnetIds": {"Type": "List<AWS::EC2::Subnet::Id>"}
     },
     "Resources": {
-      "5277268871ALBSG" : {
+      "ALBSG" : {
         "Type" : "AWS::EC2::SecurityGroup",
         "Properties" : {
-          "GroupDescription" : "5277268871 ALB Sec Group",
+          "GroupDescription" : " ALB Sec Group",
           "SecurityGroupIngress" : [
             { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0" }
           ],
           "VpcId" : { "Ref": "VpcId" }
         }
       },
-      "5277268871ALB": {
+      "ALB": {
         "Type" : "AWS::ElasticLoadBalancingV2::LoadBalancer",
         "Properties" : {
-          "SecurityGroups" : [ { "Ref": "5277268871ALBSG" } ],
+          "SecurityGroups" : [ { "Ref": "ALBSG" } ],
           "Subnets" : { "Ref": "SubnetIds" }
        }
      },
-     "5277268871ALBTG" : {
+     "ALBTG" : {
        "Type" : "AWS::ElasticLoadBalancingV2::TargetGroup",
        "Properties" : {
          "HealthCheckIntervalSeconds" : 60,
          "UnhealthyThresholdCount" : 10,
          "HealthCheckPath" : "/",
-         "Name" : "5277268871ALBTG",
+         "Name" : "ALBTG",
          "Port" : 80,
          "Protocol" : "HTTP",
          "VpcId" : { "Ref": "VpcId" }
         }
      },
-     "5277268871ALBListener" : {
+     "ALBListener" : {
         "Type" : "AWS::ElasticLoadBalancingV2::Listener",
         "Properties" : {
           "DefaultActions" : [{
             "Type" : "forward",
-            "TargetGroupArn" : { "Ref" : "5277268871ALBTG" }
+            "TargetGroupArn" : { "Ref" : "ALBTG" }
           }],
-          "LoadBalancerArn" : { "Ref" : "5277268871ALB" },
+          "LoadBalancerArn" : { "Ref" : "ALB" },
           "Port" : "80",
           "Protocol" : "HTTP"
         }
       }
     },
     "Outputs": {
-      "5277268871ALBTGARN": {
-          "Description": "5277268871ALBTG ARN",
-          "Value": {"Ref": "5277268871ALBTG"}
+      "ALBTGARN": {
+          "Description": "ALBTG ARN",
+          "Value": {"Ref": "ALBTG"}
       }
     }
 }

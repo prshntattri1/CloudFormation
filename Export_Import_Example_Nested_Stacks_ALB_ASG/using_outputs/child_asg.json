@@ -20,24 +20,24 @@
       }
     },
     "Resources": {
-      "5277268871ASG" : {
+      "ASG" : {
           "Type" : "AWS::AutoScaling::AutoScalingGroup",
           "Properties" : {
               "AvailabilityZones" : { "Ref": "AZs" },
-              "LaunchConfigurationName" : { "Ref": "5277268871LC" },
+              "LaunchConfigurationName" : { "Ref": "LC" },
               "TargetGroupARNs" : [{ "Ref": "TargetGroupARN" }],
               "MaxSize" : "2",
               "DesiredCapacity" : "1",
               "MinSize" : "1"
           }
       },
-      "5277268871LC": {
+      "LC": {
           "Type" : "AWS::AutoScaling::LaunchConfiguration",
           "Properties" : {
               "ImageId" : "ami-04681a1dbd79675a5",
               "InstanceType" : "t2.micro",
               "KeyName" : { "Ref": "KeyName" },
-              "SecurityGroups" : [ { "Ref": "5277268871EC2SG" } ],
+              "SecurityGroups" : [ { "Ref": "EC2SG" } ],
               "UserData": {
                   "Fn::Base64": {
                       "Fn::Join": [
@@ -54,10 +54,10 @@
               }
           }
       },
-      "5277268871EC2SG" : {
+      "EC2SG" : {
         "Type" : "AWS::EC2::SecurityGroup",
         "Properties" : {
-          "GroupDescription" : "5277268871 EC2 Sec Group",
+          "GroupDescription" : " EC2 Sec Group",
           "SecurityGroupIngress" : [
             { "IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : "0.0.0.0/0" },
             { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0" },
@@ -68,9 +68,9 @@
       }
     },
     "Outputs": {
-      "5277268871ASGName": {
+      "ASGName": {
           "Description": "ASG Name",
-          "Value": {"Ref": "5277268871ASG"}
+          "Value": {"Ref": "ASG"}
       }
     }
 }

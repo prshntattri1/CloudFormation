@@ -38,7 +38,7 @@
             "VpcId": {"Ref": "VpcId"},
             "KeyName": { "Ref": "KeyName" },
             "AZs": {"Fn::Join" : [",", { "Ref": "AZs" } ]},
-            "TargetGroupARN": { "Fn::GetAtt": ["ALBStack", "Outputs.5277268871ALBTGARN"]}
+            "TargetGroupARN": { "Fn::GetAtt": ["ALBStack", "Outputs.ALBTGARN"]}
           },
           "TemplateURL": "S3_URL/child_asg.json"
         }
@@ -47,11 +47,11 @@
     "Outputs":{
       "ALBTGARN": {
           "Description": "ALBTG  ARN",
-          "Value": { "Fn::GetAtt": ["ALBStack", "Outputs.5277268871ALBTGARN"]}
+          "Value": { "Fn::GetAtt": ["ALBStack", "Outputs.ALBTGARN"]}
       },
       "ASGName": {
           "Description": "ASG Name",
-          "Value": { "Fn::GetAtt": ["ASGStackRecreated", "Outputs.5277268871ASGName"]}
+          "Value": { "Fn::GetAtt": ["ASGStackRecreated", "Outputs.ASGName"]}
       }
     }
 }
