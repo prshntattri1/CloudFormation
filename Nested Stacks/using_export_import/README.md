@@ -5,7 +5,7 @@ To share information between stacks, export a stack's output values. Other stack
 To export a stack's output value, use the Export field in the Output section of the stack's template. To import those values, use the Fn::ImportValue function in the template for the other stacks.
 
 
-**[parent.json](https://github.com/prshntattri1/CloudFormation/blob/master/Nested%20Stacks/using_export_import/parent.json)** - Launches two nested stacks [child_asg.json](https://github.com/prshntattri1/CloudFormation/blob/master/Nested%20Stacks/using_export_import/child_asg.json)n and [child_alb.json](https://github.com/prshntattri1/CloudFormation/blob/master/Nested%20Stacks/using_export_import/child_alb.json).
+**[parent.json](https://github.com/prshntattri1/CloudFormation/blob/master/Nested%20Stacks/using_export_import/parent.json)** - Launches two nested stacks [child_asg.json](https://github.com/prshntattri1/CloudFormation/blob/master/Nested%20Stacks/using_export_import/child_asg.json) and [child_alb.json](https://github.com/prshntattri1/CloudFormation/blob/master/Nested%20Stacks/using_export_import/child_alb.json).
 
 **[child_alb.json](https://github.com/prshntattri1/CloudFormation/blob/master/Nested%20Stacks/using_export_import/child_alb.json)** - Creates a [Application Load Balancer](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html) with [Target Group](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html) and [Listener](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-listener.html) on port 80.
 
