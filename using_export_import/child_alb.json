@@ -1,0 +1,58 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Application Load Balancer Stack",
+    "Parameters": {
+      "VpcId": {"Type": "String"},
+      "SubnetIds": {"Type": "List<AWS::EC2::Subnet::Id>"}
+    },
+    "Resources": {
+      "ALBSG" : {
+        "Type" : "AWS::EC2::SecurityGroup",
+        "Properties" : {
+          "GroupDescription" : " ALB Sec Group",
+          "SecurityGroupIngress" : [
+            { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0" }
+          ],
+          "VpcId" : { "Ref": "VpcId" }
+        }
+      },
+      "ALB": {
+        "Type" : "AWS::ElasticLoadBalancingV2::LoadBalancer",
+        "Properties" : {
+          "SecurityGroups" : [ { "Ref": "ALBSG" } ],
+          "Subnets" : { "Ref": "SubnetIds" }
+       }
+     },
+     "ALBTG" : {
+       "Type" : "AWS::ElasticLoadBalancingV2::TargetGroup",
+       "Properties" : {
+         "HealthCheckIntervalSeconds" : 60,
+         "UnhealthyThresholdCount" : 10,
+         "HealthCheckPath" : "/",
+         "Name" : "ALBTG",
+         "Port" : 80,
+         "Protocol" : "HTTP",
+         "VpcId" : { "Ref": "VpcId" }
+        }
+     },
+     "ALBListener" : {
+        "Type" : "AWS::ElasticLoadBalancingV2::Listener",
+        "Properties" : {
+          "DefaultActions" : [{
+            "Type" : "forward",
+            "TargetGroupArn" : { "Ref" : "ALBTG" }
+          }],
+          "LoadBalancerArn" : { "Ref" : "ALB" },
+          "Port" : "80",
+          "Protocol" : "HTTP"
+        }
+      }
+    },
+    "Outputs": {
+      "ALBTGARN": {
+          "Description": "ALBTG ARN",
+          "Export": {"Name": "ALBTGARN"},
+          "Value": {"Ref": "ALBTG"}
+      }
+    }
+}

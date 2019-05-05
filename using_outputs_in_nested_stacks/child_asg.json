@@ -1,0 +1,76 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Auto Scaling Group",
+    "Parameters": {
+      "VpcId": {
+        "Description": "Choose a VPC",
+        "Type": "String"
+      },
+      "KeyName": {
+        "Description": "Choose a key pair to associate with the EC2 instances for SSH access",
+        "Type": "AWS::EC2::KeyPair::KeyName"
+      },
+      "AZs": {
+        "Description": "Choose AZs for ASG",
+        "Type": "List<AWS::EC2::AvailabilityZone::Name>"
+      },
+      "TargetGroupARN": {
+          "Description": "TargetGroupARN",
+          "Type": "String"
+      }
+    },
+    "Resources": {
+      "ASG" : {
+          "Type" : "AWS::AutoScaling::AutoScalingGroup",
+          "Properties" : {
+              "AvailabilityZones" : { "Ref": "AZs" },
+              "LaunchConfigurationName" : { "Ref": "LC" },
+              "TargetGroupARNs" : [{ "Ref": "TargetGroupARN" }],
+              "MaxSize" : "2",
+              "DesiredCapacity" : "1",
+              "MinSize" : "1"
+          }
+      },
+      "LC": {
+          "Type" : "AWS::AutoScaling::LaunchConfiguration",
+          "Properties" : {
+              "ImageId" : "ami-04681a1dbd79675a5",
+              "InstanceType" : "t2.micro",
+              "KeyName" : { "Ref": "KeyName" },
+              "SecurityGroups" : [ { "Ref": "EC2SG" } ],
+              "UserData": {
+                  "Fn::Base64": {
+                      "Fn::Join": [
+                          "",
+                          [
+                              "#!/bin/bash -ex\n",
+                              "yum update -y\n",
+                              "yum install httpd -y\n",
+                              "echo \"HI\" > /var/www/html/index.html\n",
+                              "service httpd restart"
+                          ]
+                      ]
+                  }
+              }
+          }
+      },
+      "EC2SG" : {
+        "Type" : "AWS::EC2::SecurityGroup",
+        "Properties" : {
+          "GroupDescription" : " EC2 Sec Group",
+          "SecurityGroupIngress" : [
+            { "IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : "0.0.0.0/0" },
+            { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0" },
+            { "IpProtocol" : "tcp", "FromPort" : "443", "ToPort" : "443", "CidrIp" : "0.0.0.0/0" }
+          ],
+          "VpcId" : { "Ref": "VpcId" }
+        }
+      }
+    },
+    "Outputs": {
+      "ASGName": {
+          "Description": "ASG Name",
+          "Value": {"Ref": "ASG"}
+      }
+    }
+}
