@@ -1,0 +1,59 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Auto Scaling Group",
+    "Parameters": {
+      "VpcId": {"Type": "String"},
+      "KeyName": {"Type": "AWS::EC2::KeyPair::KeyName"},
+      "SubnetIds": {"Type": "List<AWS::EC2::Subnet::Id>"},
+      "AMI": {"Type": "String"},
+      "InstanceType": {"Type": "String"},
+      "SSHCidr": {"Type": "String"}
+    },
+    "Resources": {
+      "ASG" : {
+          "Type" : "AWS::AutoScaling::AutoScalingGroup",
+          "Properties" : {
+              "VPCZoneIdentifier" : { "Ref": "SubnetIds" },
+              "LaunchConfigurationName" : { "Ref": "LC" },
+              "TargetGroupARNs" : [{"Fn::ImportValue": "ALBTGARN"}],
+              "MaxSize" : "2",
+              "DesiredCapacity" : "1",
+              "MinSize" : "1"
+          }
+      },
+      "LC": {
+          "Type" : "AWS::AutoScaling::LaunchConfiguration",
+          "Properties" : {
+              "ImageId" : { "Ref": "AMI" },
+              "InstanceType" : {"Ref": "InstanceType"},
+              "KeyName" : { "Ref": "KeyName" },
+              "SecurityGroups" : [ { "Ref": "EC2SG" } ],
+              "UserData": {
+                  "Fn::Base64": {
+                      "Fn::Join": [
+                          "",
+                          [
+                              "#!/bin/bash -ex\n",
+                              "yum update -y\n",
+                              "yum install httpd -y\n",
+                              "echo \"HI\" > /var/www/html/index.html\n",
+                              "service httpd restart"
+                          ]
+                      ]
+                  }
+              }
+          }
+      },
+      "EC2SG" : {
+        "Type" : "AWS::EC2::SecurityGroup",
+        "Properties" : {
+          "GroupDescription" : " EC2 Sec Group",
+          "SecurityGroupIngress" : [
+            { "IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref": "SSHCidr" }},
+            { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "SourceSecurityGroupId" : {"Fn::ImportValue": "ALBSG"} }
+          ],
+          "VpcId" : { "Ref": "VpcId" }
+        }
+      }
+    }
+}

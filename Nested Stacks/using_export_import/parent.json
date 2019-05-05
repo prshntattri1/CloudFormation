@@ -1,0 +1,74 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Parent Stack",
+    "Metadata" : {
+      "AWS::CloudFormation::Interface" : {
+        "ParameterGroups" : [ 
+          {
+            "Label" : { "default" : "Network Configuration" },
+            "Parameters" : [ "VpcId", "SubnetIds", "SSHCidr" ]
+          },
+          {
+          "Label" : { "default":"EC2 Configuration" },
+          "Parameters" : [ "InstanceType", "AMI" ,"KeyName" ]
+          } 
+        ]
+       }
+     },
+    "Parameters": {
+      "VpcId": {
+        "Description": "Choose a VPC",
+        "Type": "AWS::EC2::VPC::Id"
+      },
+      "SubnetIds": {
+        "Description": "Subnet List for the Load Balancer and ASG",
+        "Type":"List<AWS::EC2::Subnet::Id>"
+      },
+      "KeyName": {
+        "Description": "Choose a key pair to associate with the EC2 instances for SSH access",
+        "Type": "AWS::EC2::KeyPair::KeyName"
+      },
+      "AMI": {
+          "Description": "AMI ID",
+          "Type": "String",
+          "Default": "ami-04681a1dbd79675a5"
+      },
+      "InstanceType": {
+          "Description": "Instance Type",
+          "Type": "String",
+          "Default": "t2.micro"
+      },
+      "SSHCidr": {
+          "Description": "Allow SSH from",
+          "Type": "String",
+          "Default": "0.0.0.0/0"
+      }
+    },
+    "Resources": {
+      "ALBStack": {
+        "Type": "AWS::CloudFormation::Stack",
+        "Properties": {
+          "Parameters": {
+            "VpcId":  {"Ref": "VpcId"},
+            "SubnetIds": {"Fn::Join" : [",", { "Ref": "SubnetIds" } ]}
+          },
+          "TemplateURL": "S3_URL|child_alb.json"
+        }
+      },
+      "ASGStack": {
+        "DependsOn": "ALBStack",
+        "Type": "AWS::CloudFormation::Stack",
+        "Properties": {
+          "Parameters": {
+            "VpcId": {"Ref": "VpcId"},
+            "KeyName": { "Ref": "KeyName" },
+            "AMI": { "Ref": "AMI" },
+            "InstanceType": { "Ref": "InstanceType" },
+            "SSHCidr": {"Ref": "SSHCidr"},
+            "SubnetIds": {"Fn::Join" : [",", { "Ref": "SubnetIds" } ]}
+          },
+          "TemplateURL": "S3_URL|child_asg.json"
+        }
+      }
+    }
+}
